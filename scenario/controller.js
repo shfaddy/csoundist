@@ -6,25 +6,39 @@ super ( typeof details ?.controls === 'object' ? Object .entries ( details .cont
 
 };
 
-$_director ( { play: $ }, control, value ) {
+can = true;
 
-if ( typeof control === 'symbol' )
+async $_director ( { play: $ }, ... argv ) {
+if ( typeof argv [ 0 ] === 'symbol' )
 return;
 
-if ( control === undefined )
-return [ ... this ] .map (
+if ( this .can && ! argv .length )
+throw `With which control?
+Available controls are:
 
-control => control .join ( ' = ' )
+${ [ ... this ] .map (
 
-);
+control => `* ${ control .join ( ' = ' ) }`
+
+) .join ( '\n' ) }`;
+
+if ( ! this .can )
+return this .can = true, ( await $ ( Symbol .for ( 'senior' ) ) ) ( ... argv );
+
+const control = argv .shift ();
+const value = argv .shift ();
 
 if ( ! this .has ( control ) )
-throw "Unknown control";
+throw "Unknown control: " + control;
 
-if ( value !== undefined )
+if ( value === undefined )
+throw `With ${ control } set to what value?`;
+
 this .set ( control, value );
 
-return this .get ( control );
+this .can = false;
+
+return $ ( ... argv );
 
 };
 

@@ -19,15 +19,10 @@ this .details = Object .assign ( details, { csoundist: this } );
 
 };
 
-async $play ( { ticket, play: $, interrupt }, save ) {
+async $yallah ( { ticket, play: $, interrupt }, save ) {
 
 if ( this .constructor .sound )
 throw "Sound is already playing";
-
-const score = await $ ( 'score', '.' );
-
-await score ( 'clear' );
-await score ( await $ ( Symbol .for ( 'senior' ), 'note' ) );
 
 const path = 'work.csd';
 
@@ -36,7 +31,8 @@ await writeFile ( path, await $ ( 'document', save ), 'utf8' );
 this .constructor .sound = spawn ( 'csound', [
 
 path,
-`--omacro:directory=${ process .cwd () }`,
+`--omacro:directory=${ new URL ( import .meta .url ) .pathname .split ( '/' ) .slice ( 0, -1 ) .join ( '/' ) }`,
+`--omacro:working_directory=${ process .cwd () }`
 
 ], {
 
@@ -46,7 +42,7 @@ stdio: 'inherit'
 
 interrupt .then (
 
-() => this .constructor .sound .kill ( 'SIGKILL' )
+() => this .constructor .sound ? this .constructor .sound .kill ( 'SIGKILL' ) : undefined
 
 );
 
@@ -209,7 +205,7 @@ await $ ( 'score' ),
 
 };
 
-$kit = new Kit;
+$play = new Kit;
 
 code = [];
 
@@ -242,9 +238,9 @@ amplitude: '1/4'
 }, controller );
 
 if ( typeof controller === 'object' && Object .keys ( controller ) .length )
-code .push ( Object .keys ( controller ) .map (
+code .push ( Object .entries ( controller ) .map (
 
-( control, index ) => `iP${ control [ 0 ] .toUpperCase () + control .slice ( 1 ) } init p ( ${ index + 4 } )`
+( [ control, value ], index ) => `${ isNaN ( value .toString () [ 0 ] ) ? 'S' : 'i' }P${ control [ 0 ] .toUpperCase () + control .slice ( 1 ) } init p ( ${ index + 4 } )`
 
 ) .join ( '\n' ) );
 
@@ -258,13 +254,13 @@ code .push ( 'endin' );
 
 this .code .push ( code .join ( '\n\n' ) );
 
-return super .set ( instrument, new Instrument ( {
+return super .set ( instrument, new Instrument ( Object .assign ( Object .create ( this .details ), {
 
 instrument: instrument,
 number,
 controller
 
-} ) );
+} ) ) );
 
 };
 

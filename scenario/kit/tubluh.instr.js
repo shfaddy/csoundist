@@ -21,7 +21,7 @@ export const mix = true;
 
 export const header = `
 
-giStrikeFT ftgen 0, 0, 256, 1, "prerequisites/marmstk1.wav", 0, 0, 0
+giStrikeFT ftgen 0, 0, 256, 1, "$directory/kit/prerequisites/marmstk1.wav", 0, 0, 0
 giVibratoFT ftgen 0, 0, 128, 10, 1
 
 `;

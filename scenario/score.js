@@ -1,4 +1,6 @@
-export default class Score extends Array {
+export default class Score extends Map {
+
+ticket = 0;
 
 $_director ( { play: $ }, ... argv ) {
 
@@ -6,24 +8,23 @@ switch ( argv .length ) {
 
 case 0:
 
-return this .join ( '\n\n' );
+return [ ... this .values () ] .join ( '\n\n' );
+
+case 1:
+
+return this .get ( argv .shift () );
 
 default:
 
-this .push ( argv .join ( ' ' ) );
+this .set ( ( ++this .ticket ) .toString (), argv .join ( ' ' ) );
 
-return $ ();
+return this .ticket;
 
 }
 
 };
 
-$clear ( { play: $ } ) {
-
-this .splice ( 0 );
-
-return $ ();
-
-};
+$clear ( { play: $ } ) { return this .clear () };
+$delete ( _, ticket ) { return this .delete ( ticket ) };
 
 };
